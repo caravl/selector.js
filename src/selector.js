@@ -18,7 +18,15 @@ var traverseDomAndCollectElements = function(matchFunc, startEl) {
 // return one of these types: id, class, tag.class, tag
 
 var selectorTypeMatcher = function(selector) {
-  // your code here
+  if (selector[0] == '#') {
+    return 'id';
+  } else if (selector[0] === '.') {
+    return 'class';
+  } else if (selector.indexOf('.', 1) !== -1) {
+    return 'tag.class';
+  } else {
+    return 'tag';
+  }
 };
 
 
@@ -31,16 +39,54 @@ var matchFunctionMaker = function(selector) {
   var selectorType = selectorTypeMatcher(selector);
   var matchFunction;
   if (selectorType === "id") {
-    // define matchFunction for id
+    matchFunction = function(element) {
+      if (element.id === selector.slice(1)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
   } else if (selectorType === "class") {
-    // define matchFunction for class
+    matchFunction = function(element) {
+      var arr = element.className.split(' ');
+      var found = false;
+      arr.forEach(function(el) {
+        if (el === selector.slice(1)) {
+          found = true;
+        }
+      })
+      return found;
+
+    }
 
   } else if (selectorType === "tag.class") {
-    // define matchFunction for tag.class
+    matchFunction = function(element) {
+      var arr = element.className.split(' ');
+      var found = false;
+      var first = selector.split('.')[0] // img
+      var second = selector.split('.')[1] // thumbnail
+      arr.forEach(function(el) {
+        if (el === second) {
+          found = true;
+        }
+      });
+      if ((element.tagName.toLowerCase() === first) && (found === true)) {
+        return true;
+      } else {
+        return false;
+      }
+    }
 
   } else if (selectorType === "tag") {
-    // define matchFunction for tag
+    matchFunction = function(element) {
+      if (element.tagName.toLowerCase() == selector) {
+
+        return true;
+      } else {
+        return false;
+      }
+    }
 
   }
   return matchFunction;
